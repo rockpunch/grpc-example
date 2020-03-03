@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/rockpunch/grpc-example/greet/greetpb"
 	"google.golang.org/grpc"
@@ -8,7 +9,16 @@ import (
 	"net"
 )
 
-type server struct {
+type server struct {}
+
+func (*server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
+	fn := req.GetGreeting().GetFirstName()
+	ln := req.GetGreeting().GetLastName()
+	result := "Helllo " + fn + ln
+	res := &greetpb.GreetResponse{
+		Result:               result,
+	}
+	return res, nil
 }
 
 func main() {

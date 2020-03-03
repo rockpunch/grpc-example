@@ -1,2 +1,2 @@
 #!/bin/bash
-protoc greet/greetpb/greet.proto --go_out=plugins=grpc:.
+protoc protoc -I greet/greetpb/ greet/greetpb/greet.proto --go_out=plugins=grpc:greet/greetpb
