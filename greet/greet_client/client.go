@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/rockpunch/grpc-example/greet/greetpb"
 	"google.golang.org/grpc"
@@ -21,5 +22,24 @@ func main() {
 
 	c := greetpb.NewGreetServiceClient(conn)
 
-	fmt.Printf("Created client: %f", c)
+	doUnary(c)
+}
+
+func doUnary(c greetpb.GreetServiceClient) {
+	fmt.Println("Starting to do a Unary RPC")
+
+	req := &greetpb.GreetRequest{
+		Greeting:             &greetpb.Greeting{
+			FirstName:            "Rock",
+			LastName:             "Punch",
+		},
+	}
+
+	res, err := c.Greet(context.Background(), req)
+
+	if err != nil {
+		log.Fatalf("error while calling Greet RPC: %v", err)
+	}
+
+	log.Printf("response: %v", res.Result)
 }
