@@ -4,14 +4,14 @@ package sqrt;
 
 option go_package="sqrtpb";
 
-message request {
+message SqrtRequest {
     int32 number = 1;
 }
 
-message response {
+message SqrtResponse {
     int32 sqrt = 1;
 }
 
 service calc_sqrt {
-
+    rpc Calc(SqrtRequest) returns (SqrtResponse){};
 }
