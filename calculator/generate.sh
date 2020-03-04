@@ -1,0 +1,1 @@
+protoc -I calcpb calcpb/calc.proto --go_out=plugins=grpc:calcpb
