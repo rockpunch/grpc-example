@@ -2,8 +2,16 @@ syntax = "proto3";
 
 package sqrt;
 
-
+option go_package="sqrtpb";
 
 message request {
+    int32 number = 1;
+}
+
+message response {
+    int32 sqrt = 1;
+}
+
+service calc_sqrt {
 
 }
