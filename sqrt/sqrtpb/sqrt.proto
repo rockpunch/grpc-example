@@ -4,14 +4,14 @@ package sqrt;
 
 option go_package="sqrtpb";
 
-message SqrtRequest {
+message SqrtRequestWithDeadline {
     int32 number = 1;
 }
 
-message SqrtResponse {
-    int32 sqrt = 1;
+message SqrtResponseWithDeadline {
+    int32 root = 1;
 }
 
 service calc_sqrt {
-    rpc Calc(SqrtRequest) returns (SqrtResponse){};
+    rpc CalcWithDeadline(SqrtRequestWithDeadline) returns (SqrtResponseWithDeadline){};
 }

@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
+	"time"
 )
 
 func main() {
@@ -19,23 +20,32 @@ func main() {
 
 	c := sqrtpb.NewCalcSqrtClient(conn)
 
-	doSqrt(c, 10)
-	doSqrt(c, -2)
+	doSqrtWithDeadline(c,5, time.Second * 5)
+	doSqrtWithDeadline(c,3, time.Second * 1)
+
 }
 
-func doSqrt(c sqrtpb.CalcSqrtClient, number int32) {
-	fmt.Println("begin do sqrt unary rpc")
-	response, err := c.Calc(context.Background(), &sqrtpb.SqrtRequest{Number: number})
+func doSqrtWithDeadline(c sqrtpb.CalcSqrtClient, number int32, seconds time.Duration) {
+	fmt.Println("begin SqrtWithDeadline rpc")
+
+	// Wait for 5 seconds
+	ctx, cancel := context.WithTimeout(context.Background(), seconds)
+	response, err := c.CalcWithDeadline(ctx, &sqrtpb.SqrtRequestWithDeadline{Number: number})
+	defer cancel()
 
 	// Error Handling
 	if err != nil {
 		respErr, ok := status.FromError(err)
 		if ok {
-			// actual err from gRPC (as comma ok idiom)
-			fmt.Println(respErr.Message())
-			fmt.Println(respErr.Code())
-			if respErr.Code() == codes.InvalidArgument {
+			// check if err is code of DeadlineExceeded
+			if respErr.Code() == codes.DeadlineExceeded {
+				fmt.Println("Timeout: deadline exceeded")
+				return
+			} else if respErr.Code() == codes.InvalidArgument {
 				fmt.Println("We sent a negative number")
+				return
+			} else {
+				fmt.Printf("unexpected error: %v", err)
 				return
 			}
 		} else {
@@ -43,6 +53,5 @@ func doSqrt(c sqrtpb.CalcSqrtClient, number int32) {
 			return
 		}
 	}
-
-	fmt.Printf("result of sqrt of number %v: %v\n", number, response.GetSqrt())
+	fmt.Printf("result of sqrt of number %v: %v\n", number, response.GetRoot())
 }
